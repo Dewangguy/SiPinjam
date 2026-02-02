@@ -2,6 +2,8 @@ import React from 'react';
 import { Link, useForm } from '@inertiajs/react';
 
 import AppLayout from '../../../Shared/AppLayout';
+import Card from '../../../Shared/ui/Card';
+import PageHeader from '../../../Shared/ui/PageHeader';
 
 export default function AdminAssetForm({ asset, types, statuses, storeUrl, updateUrl, indexUrl, auth }) {
     const isEdit = Boolean(asset);
@@ -25,19 +27,23 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
     return (
         <AppLayout title={isEdit ? 'Edit Asset' : 'New Asset'} auth={auth}>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">{isEdit ? 'Perbarui data aset.' : 'Tambah aset baru.'}</div>
-                    <Link href={indexUrl} className="text-sm text-indigo-600 hover:text-indigo-700">
-                        Kembali
-                    </Link>
-                </div>
+                <PageHeader
+                    title={isEdit ? 'Edit aset' : 'Tambah aset'}
+                    subtitle={isEdit ? 'Perbarui data aset/ruangan.' : 'Tambah aset baru yang bisa dibooking.'}
+                    right={
+                        <Link href={indexUrl} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                            Kembali
+                        </Link>
+                    }
+                />
 
-                <form className="space-y-4 rounded bg-white p-6 shadow-sm" onSubmit={submit}>
+                <Card>
+                    <form className="space-y-5 p-6" onSubmit={submit}>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Name</label>
                         <input
                             type="text"
-                            className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                         />
@@ -48,7 +54,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Type</label>
                             <select
-                                className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.type}
                                 onChange={(e) => setData('type', e.target.value)}
                             >
@@ -63,7 +69,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Status</label>
                             <select
-                                className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.status}
                                 onChange={(e) => setData('status', e.target.value)}
                             >
@@ -80,7 +86,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Description</label>
                         <textarea
-                            className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             rows={3}
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
@@ -93,7 +99,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                             <label className="block text-sm font-medium text-gray-700">Category</label>
                             <input
                                 type="text"
-                                className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.category}
                                 onChange={(e) => setData('category', e.target.value)}
                             />
@@ -102,39 +108,44 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                             <label className="block text-sm font-medium text-gray-700">Serial Number</label>
                             <input
                                 type="text"
-                                className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.serial_number}
                                 onChange={(e) => setData('serial_number', e.target.value)}
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <input
-                            id="is_active"
-                            type="checkbox"
-                            checked={Boolean(data.is_active)}
-                            onChange={(e) => setData('is_active', e.target.checked)}
-                        />
-                        <label htmlFor="is_active" className="text-sm text-gray-700">
-                            Active
-                        </label>
-                        {errors.is_active ? <div className="text-xs text-red-600">{errors.is_active}</div> : null}
+                    <div className="rounded-lg bg-gray-50 p-4 ring-1 ring-inset ring-gray-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <div className="text-sm font-medium text-gray-900">Active</div>
+                                <div className="mt-0.5 text-xs text-gray-600">Nonaktifkan jika aset tidak boleh dibooking.</div>
+                            </div>
+                            <input
+                                id="is_active"
+                                type="checkbox"
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                checked={Boolean(data.is_active)}
+                                onChange={(e) => setData('is_active', e.target.checked)}
+                            />
+                        </div>
+                        {errors.is_active ? <div className="mt-2 text-xs text-red-600">{errors.is_active}</div> : null}
                     </div>
 
                     <div className="flex items-center justify-end gap-3">
-                        <Link href={indexUrl} className="rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <Link href={indexUrl} className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
                             Cancel
                         </Link>
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 disabled:opacity-50"
+                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
                         >
                             {processing ? 'Saving…' : 'Save'}
                         </button>
                     </div>
-                </form>
+                    </form>
+                </Card>
             </div>
         </AppLayout>
     );

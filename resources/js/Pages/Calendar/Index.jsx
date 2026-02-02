@@ -58,72 +58,95 @@ export default function CalendarIndex({ rooms, assets, eventsUrl, createBookingU
 
     return (
         <AppLayout title="Availability Calendar" auth={auth}>
-            <div className="space-y-4">
-                <div className="rounded bg-white p-6 shadow-sm">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Jenis</label>
-                            <select
-                                className="mt-1 rounded-md border-gray-300 shadow-sm"
-                                value={kind}
-                                onChange={(e) => setKind(e.target.value)}
-                            >
-                                <option value="">Semua</option>
-                                <option value="room">Ruangan</option>
-                                <option value="asset">Aset</option>
-                            </select>
+            <div className="space-y-6">
+                <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="space-y-3">
+                            <div className="text-sm font-medium text-gray-900">Filter</div>
+                            <div className="inline-flex rounded-lg bg-gray-100 p-1">
+                                <button
+                                    type="button"
+                                    className={`rounded-md px-3 py-2 text-sm font-medium transition ${kind === '' ? 'bg-white shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+                                    onClick={() => setKind('')}
+                                >
+                                    Semua
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`rounded-md px-3 py-2 text-sm font-medium transition ${kind === 'room' ? 'bg-white shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+                                    onClick={() => setKind('room')}
+                                >
+                                    Ruangan
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`rounded-md px-3 py-2 text-sm font-medium transition ${kind === 'asset' ? 'bg-white shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+                                    onClick={() => setKind('asset')}
+                                >
+                                    Aset
+                                </button>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium uppercase tracking-wide text-gray-500">Item (opsional)</label>
+                                {kind === 'room' ? (
+                                    <select
+                                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        value={roomId}
+                                        onChange={(e) => setRoomId(e.target.value)}
+                                    >
+                                        <option value="">Semua Ruangan</option>
+                                        {rooms.map((r) => (
+                                            <option key={r.id} value={r.id}>
+                                                {r.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : null}
+
+                                {kind === 'asset' ? (
+                                    <select
+                                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        value={assetId}
+                                        onChange={(e) => setAssetId(e.target.value)}
+                                    >
+                                        <option value="">Semua Aset</option>
+                                        {assets.map((a) => (
+                                            <option key={a.id} value={a.id}>
+                                                {a.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <div className="mt-2 text-sm text-gray-500">Pilih jenis untuk filter per item.</div>
+                                )}
+                            </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Item (opsional)</label>
-                            {kind === 'room' ? (
-                                <select
-                                    className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
-                                    value={roomId}
-                                    onChange={(e) => setRoomId(e.target.value)}
-                                >
-                                    <option value="">Semua Ruangan</option>
-                                    {rooms.map((r) => (
-                                        <option key={r.id} value={r.id}>
-                                            {r.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : null}
-
-                            {kind === 'asset' ? (
-                                <select
-                                    className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
-                                    value={assetId}
-                                    onChange={(e) => setAssetId(e.target.value)}
-                                >
-                                    <option value="">Semua Aset</option>
-                                    {assets.map((a) => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : null}
-
-                            {kind === '' ? (
-                                <div className="mt-1 text-xs text-gray-500">Pilih jenis agar bisa filter per item.</div>
-                            ) : null}
-                        </div>
-
-                        <div className="md:ms-auto">
+                        <div className="flex flex-col items-start gap-3 lg:items-end">
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                                <span className="inline-flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-yellow-500" /> Pending
+                                </span>
+                                <span className="inline-flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-green-600" /> Approved
+                                </span>
+                                <span className="inline-flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-gray-400" /> Others
+                                </span>
+                            </div>
                             <button
                                 type="button"
-                                className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
+                                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
                                 onClick={() => router.visit(createBookingUrl)}
                             >
-                                Ajukan Booking
+                                Buat Booking
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="rounded bg-white p-6 shadow-sm">
+                <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200">
                     <FullCalendar
                         ref={calendarRef}
                         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -150,7 +173,7 @@ export default function CalendarIndex({ rooms, assets, eventsUrl, createBookingU
                             });
                         }}
                     />
-                    <p className="mt-3 text-xs text-gray-500">Klik-drag pada kalender untuk prefill form pengajuan.</p>
+                    <p className="mt-3 text-sm text-gray-600">Klik-drag pada kalender untuk prefill waktu booking.</p>
                 </div>
             </div>
         </AppLayout>

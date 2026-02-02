@@ -2,6 +2,9 @@ import React, { useMemo } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 
 import AppLayout from '../../Shared/AppLayout';
+import Badge from '../../Shared/ui/Badge';
+import Card from '../../Shared/ui/Card';
+import PageHeader from '../../Shared/ui/PageHeader';
 
 function toDatetimeLocal(value) {
     if (!value) return '';
@@ -32,26 +35,30 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
     return (
         <AppLayout title="Create Booking" auth={auth}>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">Buat pengajuan booking ruangan / aset.</div>
-                    <Link href={indexUrl} className="text-sm text-indigo-600 hover:text-indigo-700">
-                        Kembali
-                    </Link>
-                </div>
+                <PageHeader
+                    title="Buat pengajuan booking"
+                    subtitle="Pilih waktu dan aset/ruangan. Sistem akan menolak jika terjadi bentrok jadwal."
+                    right={
+                        <Link href={indexUrl} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                            Kembali
+                        </Link>
+                    }
+                />
 
-                <form
-                    className="space-y-4 rounded bg-white p-6 shadow-sm"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        post(storeUrl);
-                    }}
-                >
+                <Card>
+                    <form
+                        className="space-y-6 p-6"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            post(storeUrl);
+                        }}
+                    >
                     <div className="grid gap-4 md:grid-cols-2">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Start</label>
                             <input
                                 type="datetime-local"
-                                className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.start_time}
                                 onChange={(e) => setData('start_time', e.target.value)}
                             />
@@ -61,7 +68,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                             <label className="block text-sm font-medium text-gray-700">End</label>
                             <input
                                 type="datetime-local"
-                                className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.end_time}
                                 onChange={(e) => setData('end_time', e.target.value)}
                             />
@@ -73,7 +80,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                         <label className="block text-sm font-medium text-gray-700">Purpose (opsional)</label>
                         <input
                             type="text"
-                            className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             value={data.purpose}
                             onChange={(e) => setData('purpose', e.target.value)}
                         />
@@ -82,34 +89,56 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
 
                     <div className="grid gap-6 md:grid-cols-2">
                         <div>
-                            <div className="text-sm font-medium text-gray-700">Rooms</div>
-                            <div className="mt-2 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div className="text-sm font-medium text-gray-700">Rooms</div>
+                                <div className="text-xs text-gray-500">Pilih satu atau lebih</div>
+                            </div>
+                            <div className="mt-3 space-y-2">
                                 {rooms.map((a) => (
-                                    <label key={a.id} className="flex items-center gap-2 text-sm text-gray-700">
-                                        <input
-                                            type="checkbox"
-                                            checked={data.asset_ids.includes(a.id)}
-                                            onChange={() => toggleAsset(a.id)}
-                                        />
-                                        <span>{a.name}</span>
-                                        <span className="text-xs text-gray-400">({a.status})</span>
+                                    <label
+                                        key={a.id}
+                                        className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                checked={data.asset_ids.includes(a.id)}
+                                                onChange={() => toggleAsset(a.id)}
+                                            />
+                                            <span className="font-medium text-gray-900">{a.name}</span>
+                                        </div>
+                                        <Badge tone={a.status === 'available' ? 'green' : a.status === 'maintenance' ? 'yellow' : 'gray'}>
+                                            {a.status}
+                                        </Badge>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
                         <div>
-                            <div className="text-sm font-medium text-gray-700">Tools</div>
-                            <div className="mt-2 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div className="text-sm font-medium text-gray-700">Tools</div>
+                                <div className="text-xs text-gray-500">Pilih satu atau lebih</div>
+                            </div>
+                            <div className="mt-3 space-y-2">
                                 {tools.map((a) => (
-                                    <label key={a.id} className="flex items-center gap-2 text-sm text-gray-700">
-                                        <input
-                                            type="checkbox"
-                                            checked={data.asset_ids.includes(a.id)}
-                                            onChange={() => toggleAsset(a.id)}
-                                        />
-                                        <span>{a.name}</span>
-                                        <span className="text-xs text-gray-400">({a.status})</span>
+                                    <label
+                                        key={a.id}
+                                        className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                checked={data.asset_ids.includes(a.id)}
+                                                onChange={() => toggleAsset(a.id)}
+                                            />
+                                            <span className="font-medium text-gray-900">{a.name}</span>
+                                        </div>
+                                        <Badge tone={a.status === 'available' ? 'green' : a.status === 'maintenance' ? 'yellow' : 'gray'}>
+                                            {a.status}
+                                        </Badge>
                                     </label>
                                 ))}
                             </div>
@@ -119,18 +148,19 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                     {errors.asset_ids ? <div className="text-xs text-red-600">{errors.asset_ids}</div> : null}
 
                     <div className="flex items-center justify-end gap-3">
-                        <Link href={indexUrl} className="rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <Link href={indexUrl} className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
                             Cancel
                         </Link>
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 disabled:opacity-50"
+                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
                         >
                             {processing ? 'Submitting…' : 'Submit'}
                         </button>
                     </div>
-                </form>
+                    </form>
+                </Card>
             </div>
         </AppLayout>
     );
