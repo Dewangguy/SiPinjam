@@ -31,7 +31,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                     title={isEdit ? 'Edit aset' : 'Tambah aset'}
                     subtitle={isEdit ? 'Perbarui data aset/ruangan.' : 'Tambah aset baru yang bisa dibooking.'}
                     right={
-                        <Link href={indexUrl} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                        <Link href={indexUrl} className="text-sm font-medium text-emerald-700 hover:text-emerald-800">
                             Kembali
                         </Link>
                     }
@@ -43,7 +43,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                         <label className="block text-sm font-medium text-gray-700">Name</label>
                         <input
                             type="text"
-                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                         />
@@ -54,7 +54,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Type</label>
                             <select
-                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                 value={data.type}
                                 onChange={(e) => setData('type', e.target.value)}
                             >
@@ -69,7 +69,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Status</label>
                             <select
-                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                 value={data.status}
                                 onChange={(e) => setData('status', e.target.value)}
                             >
@@ -86,7 +86,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Description</label>
                         <textarea
-                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                             rows={3}
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
@@ -99,7 +99,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                             <label className="block text-sm font-medium text-gray-700">Category</label>
                             <input
                                 type="text"
-                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                 value={data.category}
                                 onChange={(e) => setData('category', e.target.value)}
                             />
@@ -108,7 +108,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                             <label className="block text-sm font-medium text-gray-700">Serial Number</label>
                             <input
                                 type="text"
-                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                 value={data.serial_number}
                                 onChange={(e) => setData('serial_number', e.target.value)}
                             />
@@ -124,7 +124,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                             <input
                                 id="is_active"
                                 type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
                                 checked={Boolean(data.is_active)}
                                 onChange={(e) => setData('is_active', e.target.checked)}
                             />
@@ -139,7 +139,7 @@ export default function AdminAssetForm({ asset, types, statuses, storeUrl, updat
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
+                            className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
                         >
                             {processing ? 'Saving…' : 'Save'}
                         </button>

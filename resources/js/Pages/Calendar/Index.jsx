@@ -91,7 +91,7 @@ export default function CalendarIndex({ rooms, assets, eventsUrl, createBookingU
                                 <label className="block text-xs font-medium uppercase tracking-wide text-gray-500">Item (opsional)</label>
                                 {kind === 'room' ? (
                                     <select
-                                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                         value={roomId}
                                         onChange={(e) => setRoomId(e.target.value)}
                                     >
@@ -106,7 +106,7 @@ export default function CalendarIndex({ rooms, assets, eventsUrl, createBookingU
 
                                 {kind === 'asset' ? (
                                     <select
-                                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                         value={assetId}
                                         onChange={(e) => setAssetId(e.target.value)}
                                     >
@@ -137,7 +137,7 @@ export default function CalendarIndex({ rooms, assets, eventsUrl, createBookingU
                             </div>
                             <button
                                 type="button"
-                                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
                                 onClick={() => router.visit(createBookingUrl)}
                             >
                                 Buat Booking

@@ -66,7 +66,7 @@
 
                         <div class="flex items-center justify-end gap-3">
                             <a href="{{ route('loans.index') }}" class="text-sm text-gray-600 hover:underline">Kembali</a>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-md text-sm hover:bg-emerald-700">
                                 Kirim Pengajuan
                             </button>
                         </div>

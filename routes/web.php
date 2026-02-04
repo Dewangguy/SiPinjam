@@ -7,6 +7,11 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\Admin\BookingApprovalController;
 use App\Http\Controllers\Admin\LoanApprovalController;
+use App\Enums\AssetStatus;
+use App\Enums\AssetType;
+use App\Enums\BookingStatus;
+use App\Models\Asset;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,7 +20,71 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $todayStart = now()->startOfDay();
+    $todayEnd = now()->endOfDay();
+
+    $weekStart = now()->startOfWeek();
+    $weekEnd = now()->endOfWeek();
+
+    $activeToday = Booking::query()
+        ->blocking()
+        ->overlapping($todayStart, $todayEnd)
+        ->count();
+
+    $pendingRequests = Booking::query()
+        ->where('status', BookingStatus::Pending)
+        ->count();
+
+    $roomsAvailable = Asset::query()
+        ->where('type', AssetType::Room)
+        ->where('status', AssetStatus::Available)
+        ->where('is_active', true)
+        ->count();
+
+    $scheduledThisWeek = Booking::query()
+        ->blocking()
+        ->whereBetween('start_time', [$weekStart, $weekEnd])
+        ->count();
+
+    $todaySchedule = Booking::query()
+        ->blocking()
+        ->whereBetween('start_time', [$todayStart, $todayEnd])
+        ->with(['assets'])
+        ->orderBy('start_time')
+        ->limit(6)
+        ->get()
+        ->map(fn (Booking $b) => [
+            'id' => $b->id,
+            'start_time' => $b->start_time?->toIso8601String(),
+            'end_time' => $b->end_time?->toIso8601String(),
+            'assets' => $b->assets->map(fn ($a) => ['id' => $a->id, 'name' => $a->name, 'type' => $a->type?->value])->values(),
+            'purpose' => $b->purpose,
+            'status' => $b->status?->value,
+        ]);
+
+    $recentActivity = Booking::query()
+        ->with(['user', 'assets'])
+        ->latest('created_at')
+        ->limit(6)
+        ->get()
+        ->map(fn (Booking $b) => [
+            'id' => $b->id,
+            'created_at' => $b->created_at?->toIso8601String(),
+            'user' => $b->user ? ['id' => $b->user->id, 'name' => $b->user->name, 'email' => $b->user->email] : null,
+            'assets' => $b->assets->map(fn ($a) => ['id' => $a->id, 'name' => $a->name])->values(),
+            'status' => $b->status?->value,
+        ]);
+
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'active_today' => $activeToday,
+            'pending_requests' => $pendingRequests,
+            'rooms_available' => $roomsAvailable,
+            'scheduled_this_week' => $scheduledThisWeek,
+        ],
+        'todaySchedule' => $todaySchedule,
+        'recentActivity' => $recentActivity,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

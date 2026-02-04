@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="md:ms-auto">
-                            <a href="{{ route('loans.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">
+                            <a href="{{ route('loans.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-md text-sm hover:bg-emerald-700">
                                 Ajukan Peminjaman
                             </a>
                         </div>

@@ -29,7 +29,7 @@ export default function BookingIndex({ bookings, createUrl, cancelUrlTemplate, a
                     right={
                         <Link
                             href={createUrl}
-                            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                            className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
                         >
                             Buat Booking
                         </Link>
@@ -43,7 +43,7 @@ export default function BookingIndex({ bookings, createUrl, cancelUrlTemplate, a
                         action={
                             <Link
                                 href={createUrl}
-                                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
                             >
                                 Buat Booking
                             </Link>

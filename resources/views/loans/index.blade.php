@@ -12,7 +12,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('My Loans') }}
             </h2>
-            <a href="{{ route('loans.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">
+            <a href="{{ route('loans.create') }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-md text-sm hover:bg-emerald-700">
                 Ajukan
             </a>
         </div>

@@ -39,7 +39,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                     title="Buat pengajuan booking"
                     subtitle="Pilih waktu dan aset/ruangan. Sistem akan menolak jika terjadi bentrok jadwal."
                     right={
-                        <Link href={indexUrl} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                        <Link href={indexUrl} className="text-sm font-medium text-emerald-700 hover:text-emerald-800">
                             Kembali
                         </Link>
                     }
@@ -58,7 +58,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                             <label className="block text-sm font-medium text-gray-700">Start</label>
                             <input
                                 type="datetime-local"
-                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                 value={data.start_time}
                                 onChange={(e) => setData('start_time', e.target.value)}
                             />
@@ -68,7 +68,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                             <label className="block text-sm font-medium text-gray-700">End</label>
                             <input
                                 type="datetime-local"
-                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                                 value={data.end_time}
                                 onChange={(e) => setData('end_time', e.target.value)}
                             />
@@ -80,7 +80,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                         <label className="block text-sm font-medium text-gray-700">Purpose (opsional)</label>
                         <input
                             type="text"
-                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                             value={data.purpose}
                             onChange={(e) => setData('purpose', e.target.value)}
                         />
@@ -102,7 +102,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="checkbox"
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
                                                 checked={data.asset_ids.includes(a.id)}
                                                 onChange={() => toggleAsset(a.id)}
                                             />
@@ -130,7 +130,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="checkbox"
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
                                                 checked={data.asset_ids.includes(a.id)}
                                                 onChange={() => toggleAsset(a.id)}
                                             />
@@ -154,7 +154,7 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
+                            className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
                         >
                             {processing ? 'Submitting…' : 'Submit'}
                         </button>

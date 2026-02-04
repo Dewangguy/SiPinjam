@@ -33,7 +33,7 @@ export default function AdminAssetsIndex({ assets, createUrl, editUrlTemplate, a
                     right={
                         <Link
                             href={createUrl}
-                            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                            className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
                         >
                             New Asset
                         </Link>
@@ -44,7 +44,7 @@ export default function AdminAssetsIndex({ assets, createUrl, editUrlTemplate, a
                     <label className="block text-xs font-medium uppercase tracking-wide text-gray-500">Search</label>
                     <input
                         type="text"
-                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        className="mt-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
                         placeholder="Cari nama, type, status, category, serial…"
                         value={q}
                         onChange={(e) => setQ(e.target.value)}
@@ -58,7 +58,7 @@ export default function AdminAssetsIndex({ assets, createUrl, editUrlTemplate, a
                         action={
                             <Link
                                 href={createUrl}
-                                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+                                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
                             >
                                 New Asset
                             </Link>
