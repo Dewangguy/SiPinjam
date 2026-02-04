@@ -7,7 +7,10 @@ use App\Enums\BookingStatus;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Asset;
 use App\Models\Booking;
+use App\Models\BookingItem;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -51,10 +54,37 @@ class BookingController extends Controller
             'tools' => $tools,
             'storeUrl' => route('bookings.store'),
             'indexUrl' => route('bookings.index'),
+            'availabilityUrl' => route('bookings.availability'),
             'prefill' => [
                 'start_time' => request()->input('start_time'),
                 'end_time' => request()->input('end_time'),
             ],
+        ]);
+    }
+
+    public function availability(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_time' => ['required', 'date'],
+            'end_time' => ['required', 'date', 'after:start_time'],
+        ]);
+
+        $start = $validated['start_time'];
+        $end = $validated['end_time'];
+
+        $blockedAssetIds = BookingItem::query()
+            ->whereHas('booking', function ($q) use ($start, $end) {
+                $q->blocking()->overlapping($start, $end);
+            })
+            ->distinct()
+            ->orderBy('asset_id')
+            ->pluck('asset_id')
+            ->values();
+
+        return response()->json([
+            'start_time' => $start,
+            'end_time' => $end,
+            'blocked_asset_ids' => $blockedAssetIds,
         ]);
     }
 
@@ -70,7 +100,7 @@ class BookingController extends Controller
             ]);
         } catch (\DomainException $e) {
             return back()
-                ->withErrors(['start_time' => $e->getMessage()])
+                ->withErrors(['asset_ids' => $e->getMessage()])
                 ->withInput();
         }
 

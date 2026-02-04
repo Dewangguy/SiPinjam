@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 
 import AppLayout from '../../Shared/AppLayout';
@@ -14,9 +14,14 @@ function toDatetimeLocal(value) {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefill, auth }) {
+export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, availabilityUrl, prefill, auth }) {
     const initialStart = useMemo(() => toDatetimeLocal(prefill?.start_time), [prefill?.start_time]);
     const initialEnd = useMemo(() => toDatetimeLocal(prefill?.end_time), [prefill?.end_time]);
+
+    const [blockedAssetIds, setBlockedAssetIds] = useState([]);
+    const [checkingAvailability, setCheckingAvailability] = useState(false);
+    const [availabilityError, setAvailabilityError] = useState('');
+    const [autoRemovedIds, setAutoRemovedIds] = useState([]);
 
     const { data, setData, post, processing, errors } = useForm({
         start_time: initialStart,
@@ -25,12 +30,95 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
         asset_ids: [],
     });
 
+    const isValidRange = useMemo(() => {
+        if (!data.start_time || !data.end_time) return false;
+        const start = new Date(data.start_time);
+        const end = new Date(data.end_time);
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return false;
+        return end.getTime() > start.getTime();
+    }, [data.start_time, data.end_time]);
+
+    useEffect(() => {
+        if (!isValidRange) {
+            setBlockedAssetIds([]);
+            setAvailabilityError('');
+            setCheckingAvailability(false);
+            return;
+        }
+
+        const controller = new AbortController();
+        const timeout = setTimeout(async () => {
+            try {
+                setCheckingAvailability(true);
+                setAvailabilityError('');
+
+                const params = new URLSearchParams({
+                    start_time: data.start_time,
+                    end_time: data.end_time,
+                });
+
+                const res = await fetch(`${availabilityUrl}?${params.toString()}`, {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                    signal: controller.signal,
+                });
+
+                if (!res.ok) {
+                    let message = 'Gagal mengecek ketersediaan aset.';
+                    try {
+                        const json = await res.json();
+                        if (json?.message) message = json.message;
+                    } catch {
+                        // ignore
+                    }
+                    throw new Error(message);
+                }
+
+                const json = await res.json();
+                const ids = Array.isArray(json?.blocked_asset_ids) ? json.blocked_asset_ids : [];
+                const normalized = ids.map((v) => Number(v)).filter((v) => Number.isFinite(v));
+                setBlockedAssetIds(normalized);
+
+                // Auto-remove assets that became blocked after time changes.
+                if (data.asset_ids.length > 0 && normalized.length > 0) {
+                    const blockedSet = new Set(normalized);
+                    const kept = data.asset_ids.filter((id) => !blockedSet.has(id));
+                    const removed = data.asset_ids.filter((id) => blockedSet.has(id));
+                    if (removed.length > 0) {
+                        setData('asset_ids', kept);
+                        setAutoRemovedIds(removed);
+                    } else {
+                        setAutoRemovedIds([]);
+                    }
+                } else {
+                    setAutoRemovedIds([]);
+                }
+            } catch (e) {
+                if (e?.name === 'AbortError') return;
+                setAvailabilityError(e?.message || 'Gagal mengecek ketersediaan aset.');
+            } finally {
+                setCheckingAvailability(false);
+            }
+        }, 250);
+
+        return () => {
+            clearTimeout(timeout);
+            controller.abort();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.start_time, data.end_time, isValidRange]);
+
     const toggleAsset = (id) => {
+        if (blockedAssetIds.includes(id)) return;
         const next = new Set(data.asset_ids);
         if (next.has(id)) next.delete(id);
         else next.add(id);
         setData('asset_ids', Array.from(next));
     };
+
+    const blockedSet = useMemo(() => new Set(blockedAssetIds), [blockedAssetIds]);
+    const blockedCount = blockedAssetIds.length;
 
     return (
         <AppLayout title="Create Booking" auth={auth}>
@@ -76,6 +164,28 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                         </div>
                     </div>
 
+                    <div className="rounded-xl bg-gray-50 p-4 ring-1 ring-inset ring-gray-200">
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <div className="text-sm font-medium text-gray-900">Ketersediaan aset</div>
+                                <div className="mt-0.5 text-xs text-gray-600">
+                                    {isValidRange
+                                        ? 'Daftar aset akan otomatis dinonaktifkan jika sudah dibooking pada rentang waktu yang sama.'
+                                        : 'Isi Start dan End terlebih dahulu untuk melihat aset yang tersedia.'}
+                                </div>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                {checkingAvailability ? 'Mengecek…' : isValidRange ? `${blockedCount} terpakai` : ''}
+                            </div>
+                        </div>
+                        {availabilityError ? <div className="mt-2 text-xs text-amber-700">{availabilityError}</div> : null}
+                        {autoRemovedIds.length > 0 ? (
+                            <div className="mt-2 text-xs text-amber-700">
+                                Beberapa aset otomatis dilepas karena sudah terbooking pada waktu tersebut.
+                            </div>
+                        ) : null}
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Purpose (opsional)</label>
                         <input
@@ -95,23 +205,35 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                             </div>
                             <div className="mt-3 space-y-2">
                                 {rooms.map((a) => (
+                                    (() => {
+                                        const isBlocked = blockedSet.has(a.id);
+                                        const disabled = !isValidRange || isBlocked;
+                                        return (
                                     <label
                                         key={a.id}
-                                        className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        className={`flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 ${
+                                            disabled ? 'cursor-not-allowed bg-gray-50 opacity-70' : 'cursor-pointer bg-white hover:bg-gray-50'
+                                        }`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="checkbox"
                                                 className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
                                                 checked={data.asset_ids.includes(a.id)}
+                                                disabled={disabled}
                                                 onChange={() => toggleAsset(a.id)}
                                             />
                                             <span className="font-medium text-gray-900">{a.name}</span>
                                         </div>
-                                        <Badge tone={a.status === 'available' ? 'green' : a.status === 'maintenance' ? 'yellow' : 'gray'}>
-                                            {a.status}
-                                        </Badge>
+                                        <div className="flex items-center gap-2">
+                                            {isBlocked ? <Badge tone="gray">Booked</Badge> : null}
+                                            <Badge tone={a.status === 'available' ? 'green' : a.status === 'maintenance' ? 'yellow' : 'gray'}>
+                                                {a.status}
+                                            </Badge>
+                                        </div>
                                     </label>
+                                        );
+                                    })()
                                 ))}
                             </div>
                         </div>
@@ -123,23 +245,35 @@ export default function BookingCreate({ rooms, tools, storeUrl, indexUrl, prefil
                             </div>
                             <div className="mt-3 space-y-2">
                                 {tools.map((a) => (
+                                    (() => {
+                                        const isBlocked = blockedSet.has(a.id);
+                                        const disabled = !isValidRange || isBlocked;
+                                        return (
                                     <label
                                         key={a.id}
-                                        className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        className={`flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 ${
+                                            disabled ? 'cursor-not-allowed bg-gray-50 opacity-70' : 'cursor-pointer bg-white hover:bg-gray-50'
+                                        }`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="checkbox"
                                                 className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
                                                 checked={data.asset_ids.includes(a.id)}
+                                                disabled={disabled}
                                                 onChange={() => toggleAsset(a.id)}
                                             />
                                             <span className="font-medium text-gray-900">{a.name}</span>
                                         </div>
-                                        <Badge tone={a.status === 'available' ? 'green' : a.status === 'maintenance' ? 'yellow' : 'gray'}>
-                                            {a.status}
-                                        </Badge>
+                                        <div className="flex items-center gap-2">
+                                            {isBlocked ? <Badge tone="gray">Booked</Badge> : null}
+                                            <Badge tone={a.status === 'available' ? 'green' : a.status === 'maintenance' ? 'yellow' : 'gray'}>
+                                                {a.status}
+                                            </Badge>
+                                        </div>
                                     </label>
+                                        );
+                                    })()
                                 ))}
                             </div>
                         </div>
